@@ -27,10 +27,10 @@ fi
 
 # GNUPG Cannot be moved away safely
 export GNUPGHOME="$HOME/.gnupg"
-\mkdir -p "$(dirname $GNUPGHOME)"
-\chmod -R u+rw,go-rwx "${GNUPGHOME}"
+\mkdir -p "$GNUPGHOME"
+\chmod -R u+rw,go-rwx "$GNUPGHOME"
 
 # SSH Folder cannot be safely moved
 export SSHHOME="$HOME/.ssh"
-\mkdir -p "$(dirname $SSHHOME)"
-\chmod -R u+rw,go-rwx "${SSHHOME}"
+\mkdir -p "$SSHHOME"
+\chmod -R u+rw,go-rwx "$SSHHOME"
