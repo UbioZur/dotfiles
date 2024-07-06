@@ -1,0 +1,36 @@
+## ~  UbioZur - https://github.com/UbioZur  ~ ##
+
+
+#### Cleanup Home Directory when possible!
+
+# WGet RC file can be moved to .config folder!
+export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
+\mkdir -p "$(dirname ${WGETRC})"
+# Move wget hsts file away from home, make sure the file defined in wgetrc exist.
+\mkdir -p "${XDG_STATE_HOME}/wget"
+\touch "${XDG_STATE_HOME}/wget/wget-hsts"
+
+# Less History file can be moved to the .local/state folder !
+export LESSHISTFILE="${XDG_STATE_HOME}/less/history"
+\mkdir -p "$(dirname ${LESSHISTFILE})"
+\touch ${LESSHISTFILE}
+
+# ZSH configuration can be moved to .config folder
+if command -v zsh &> /dev/null
+then
+    export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
+    \mkdir -p "${ZDOTDIR}"
+fi
+
+
+#### Config I wish could be moved away and keep compatibility.
+
+# GNUPG Cannot be moved away safely
+export GNUPGHOME="$HOME/.gnupg"
+\mkdir -p "$(dirname $GNUPGHOME)"
+\chmod -R u+rw,go-rwx "${GNUPGHOME}"
+
+# SSH Folder cannot be safely moved
+export SSHHOME="$HOME/.ssh"
+\mkdir -p "$(dirname $SSHHOME)"
+\chmod -R u+rw,go-rwx "${SSHHOME}"

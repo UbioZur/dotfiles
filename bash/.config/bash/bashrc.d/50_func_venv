@@ -1,0 +1,32 @@
+## ~  UbioZur - https://github.com/UbioZur  ~ ##
+
+
+#### Python Virtual Environement scripts
+
+# Function to check if the current directory or any parent directory contains a .venv directory
+function __getvenvpath () {
+    local dir="$PWD"
+
+    while [ "$dir" != "/" ]; do
+        local venv_path="$dir/.venv"
+
+        if [ -d "$venv_path" ] && [ -f "$venv_path/pyvenv.cfg" ]; then
+            echo "$venv_path"
+        fi
+        dir="$(dirname "$dir")"  # Move up to the parent directory
+    done
+}
+
+#### Function to activate the virtual environment
+
+function activate () {
+    local -r venv="$(__getvenvpath)"
+
+    if [[ -z $venv ]]; then
+        echo -e "\033[31mERROR:\033[0m No Python virtual environement found!" >&2
+        return 1
+    fi
+    echo -e "\033[32mOK:\033[0m Activating python virtual environement!" >&2
+    source $venv/bin/activate
+    return 0
+}

@@ -1,0 +1,93 @@
+// ~  UbioZur - https://github.com/UbioZur  ~ //
+
+// Default configuration to use on terminal launch on the computer with hostname laptop-6800U
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    "logo": {
+        "type": "auto",
+        "source": "$XDG_DATA_HOME/fastfetch/system76_ascii",
+        "padding": {
+            "top": 2,
+            "left": 5,
+            "right": 5
+        }
+    },
+    "display": {
+        "separator": "  "
+    },
+    "modules": [
+        "break",
+        {
+            "type": "custom", // HardwareStart
+            "format": "┌───────────────── \u001b[1mHardware\u001b[0m ─────────────────┐" // `\u001b` is `\033`, or `\e`
+        },
+        {
+            "type": "host",
+            "key": "󰪫 PC ",
+            "keyColor": "green",
+            "outputColor": "white"
+        },
+        {
+            "type": "cpu",
+            "key": "│ ├ 󰻠",
+            "keyColor": "green",
+            "outputColor": "white"
+        },
+        {
+            "type": "gpu",
+            "key": "│ ├ ",
+            "keyColor": "green",
+            "outputColor": "white"
+        },
+        {
+            "type": "memory",
+            "key": "│ ├ 󰍛",
+            "keyColor": "green",
+            "outputColor": "white"
+        },
+        {
+            "type": "battery",
+            "key": "│ └ 󰂄",
+            "keyColor": "green",
+            "outputColor": "white"
+        },
+        {
+            "type": "custom", // HardwareStop
+            "format": "└────────────────────────────────────────────┘"
+        },
+        "break",
+        {
+            "type": "custom", // SoftwareStart
+            "format": "┌───────────────── \u001b[1mSoftware\u001b[0m ─────────────────┐" // `\u001b` is `\033`, or `\e`
+        },
+        {
+            "type": "os",
+            "key": " OS ",
+            "keyColor": "yellow",
+            "outputColor": "white"
+        },
+        {
+            "type": "kernel",
+            "key": "│ ├ ",
+            "keyColor": "yellow",
+            "outputColor": "white"
+        },
+        {
+            "type": "packages",
+            "key": "│ ├ ",
+            "keyColor": "yellow",
+            "outputColor": "white"
+        },
+        {
+            "type": "shell",
+            "key": "│ └ ",
+            "keyColor": "yellow",
+            "outputColor": "white"
+        },
+        {
+            "type": "custom", // SoftwareStop
+            "format": "└────────────────────────────────────────────┘"
+        },
+        "break"
+    ]
+}

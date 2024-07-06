@@ -1,0 +1,57 @@
+## ~  UbioZur - https://github.com/UbioZur  ~ ##
+
+
+#### Useful function to backup a file
+
+backup () {
+    if [ -z "$1" ]; then
+        # display usage if no parameters given
+        echo "Usage: backup <path/file_name.ext>"
+        echo "       backup <path/directory>"
+        return 0
+    fi
+
+    param="$1"
+    today="$(date '+%Y-%m-%d')"
+
+    # If Directory, Compress and backup
+    if [ -d "$param" ]; then
+        echo "Backing up directory to a compressed tarball..."
+        \tar -czvf "${param}-${today}.tar.gz" "${param}"
+        return 0
+    fi
+
+    # If Directory, Compress and backup
+    if [ -f "$param" ]; then
+        echo "Backing up file..."
+        \cp "${param}" "${param}-${today}.bak"
+        return 0
+    fi
+
+    echo "ERROR: Unsure what to do!"
+    return 1
+}
+
+alias bck="backup"
+
+
+#### Cleanup all .bck files
+
+cleanbck () {
+    if [ -z "$1" ]; then
+        # display usage if no parameters given
+        echo "Usage: cleanbck <path/directory>"
+        return 0
+    fi
+
+    param="$1"
+
+    if [ -d "$param" ]; then
+        echo "cleaning up '${param}/*.bck'..."
+        \rm -iv "${param}/*.bck"
+        return 0
+    fi
+
+    echo "ERROR: Unsure what to do!"
+    return 1
+}

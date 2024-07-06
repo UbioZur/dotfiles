@@ -1,0 +1,3 @@
+# Fastfetch
+
+Configurations for fastfetch.

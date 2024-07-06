@@ -1,0 +1,186 @@
+## ~  UbioZur - https://github.com/UbioZur  ~ ##
+
+#### Colors
+
+# If used Directly in the PS1 OR in a $(command) in the PS1, need "\[${COLOR}\]"
+# If not used directly (setting a function with PROMPT_COMMAND), echo -e "${COLOR}"
+
+__C_RESET='\033[0m'
+__C_BOLD='\033[1m';           __C_BOLD_RESET='\033[21m'
+__C_RED='\033[31m';           __C_RED_BOLD='\033[31;1m'
+__C_GREEN='\033[32m';         __C_GREEN_BOLD='\033[32;1m'
+__C_YELLOW='\033[33m';        __C_YELLOW_BOLD='\033[33;1m'
+__C_BLUE='\033[34m';          __C_BLUE_BOLD='\033[34;1m'
+__C_MAGENTA='\033[35m';       __C_MAGENTA_BOLD='\033[35;1m'
+__C_CYAN='\033[36m';          __C_CYAN_BOLD='\033[36;1m'
+__C_GREY='\033[37m';          __C_GREY_BOLD='\033[37;1m'
+
+
+
+#### Variables used for PS1
+
+__SPACING="   "
+__GIT=""
+
+
+#### Get Git information (branch|+MDR?SP)
+
+__getgit () {
+    # If not a git repo, return immediatly
+    git status &>/dev/null || return
+
+    echo -en "${__SPACING}${__C_BOLD}${__C_RESET}"
+
+    local -r branch="$(\git branch --no-color 2>/dev/null | \sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
+
+    # If Branch is empty (no commit)
+    [[ -z ${branch} ]] && { echo -en "${__C_GREY_BOLD}(${__C_RESET}${__C_RED}Empty${__C_RESET}${__C_GREY_BOLD})${__C_RESET}"; return; }
+
+    echo -en "${__C_GREY_BOLD}(${__C_RESET}${__C_GREEN_BOLD}${branch}${__C_RESET}"
+    ## Get the status of the branch
+    local -r status="$(\git status --porcelain 2>/dev/null)"
+    local -r fullstatus="$(\git status)"
+    [[ "$fullstatus" =~ "branch is ahead of" ]] && needpush="true"
+    [[ "$fullstatus" =~ "branch is behind" ]] && needpull="true"
+    local -r stashed="$(\git stash list)"
+    if [[ -n $status || -n $needpush || -n $needpull || $stashed ]]; then
+        echo -n "|"
+        ## Staged: Some items are staged (Added)
+        [[ -n $(\grep -e '^[MADRC]' <<<"$status") ]] && echo -en "${__C_BLUE_BOLD}+${__C_RESET}"
+        ## Modified Items
+        [[ -n $(\grep -e '^ M' <<<"$status") ]] && echo -en "${__C_YELLOW}M${__C_RESET}"
+        ## Deleted Items
+        [[ -n $(\grep -e '^ D' <<<"$status") ]] && echo -en "${__C_RED_BOLD}D${__C_RESET}"
+        ## Renamed Items
+        [[ -n $(\grep -e '^ R' <<<"$status") ]] && echo -en "${__C_RED}R${__C_RESET}"
+        ## Dirty: Some items are not stages (Not added)
+        [[ -n $(\grep -e '^??' <<<"$status") ]] && echo -en "${__C_YELLOW_BOLD}?${__C_RESET}"
+        ## Stashed Files
+        [[ -n ${stashed} ]] && echo -en "${__C_MAGENTA_BOLD}S${__C_RESET}"
+        ## Commit  not pushed to remote
+        [[ -n ${needpush} ]] && echo -en "${__C_GREEN}${__C_RESET}"
+        ## Commit  not pulled to remote
+        [[ -n ${needpull} ]] && echo -en "${__C_BLUE}${__C_RESET}"
+    fi
+    echo -en "${__C_GREY_BOLD})${__C_RESET}"
+}
+
+
+#### Get PyVEnv |venv: project| or |venv: project ! activated: venv|
+
+function __getvenv {
+    local -r venv="$(__getvenvpath)"
+    local -r project="$(basename "$(dirname "$venv")")"
+
+    # Virtual Env Not activated! (Display in bold)
+    if [[ -z $VIRTUAL_ENV ]]; then
+        if [[ -n $venv ]]; then
+            echo -en "${__SPACING} ${__C_GREY_BOLD}|${__C_RESET}venv: ${__C_BOLD}${project}${__C_RESET}${__C_GREY_BOLD}|${__C_RESET}"
+        fi
+    else
+        local -r activated="$(basename "$(dirname "$VIRTUAL_ENV")")"
+        # not inside a venv folder (Display in Yellow Bold)
+        if [[ -z $venv ]]; then
+            echo -en "${__SPACING} ${__C_GREY_BOLD}|${__C_RESET}venv: ${__C_YELLOW_BOLD}${activated}${__C_RESET}${__C_GREY_BOLD}|${__C_RESET}"
+
+        # $VIRTUAL_ENV and venv do not match (display red bold)
+        elif [[ "$venv" != "$VIRTUAL_ENV" ]]; then
+            echo -en "${__SPACING} ${__C_GREY_BOLD}|${__C_RESET}venv: ${__C_BOLD}${project}${__C_RESET} ! activated: ${__C_RED_BOLD}${activated}${__C_RESET}${__C_GREY_BOLD}|${__C_RESET}"
+
+        # Display in Green Bold
+        else
+            echo -en "${__SPACING} ${__C_GREY_BOLD}|${__C_RESET}venv: ${__C_GREEN_BOLD}${project}${__C_RESET}${__C_GREY_BOLD}|${__C_RESET}"
+        fi
+    fi
+}
+
+# Desactivate builtin prompt for python venv
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+#### Get Remote Machine
+
+__getremote () {
+    # If remote connection (SSH)
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        echo -e "\[${__C_BOLD}\] (SSH)\[${__C_RESET}\]"
+        return
+    fi
+    # If Inside a container [CT]
+    if ! grep 'kthreadd' /proc/2/status &>/dev/null; then
+        echo -e "\[${__C_BOLD}\] [CT]\[${__C_RESET}\]"
+        return
+    fi
+    echo ""
+}
+
+
+#### Get Host Machine
+
+__gethost () {
+    # If Inside a container [hostname]
+    if ! grep 'kthreadd' /proc/2/status &>/dev/null; then
+        echo " [\h]"
+        return
+    fi
+    # If remote connection (hostname)
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        echo " (\h)"
+        return
+    fi
+    echo ""
+}
+
+
+#### Get User
+
+__getuser () {
+    # If Root, RED BOLD User
+    if [ $UID == 0 ]; then
+        echo "\[${__C_RED_BOLD}\]ROOT\[${__C_RESET}\] "
+        return
+    fi
+    # If remote connection user
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        echo "\[${__C_CYAN}\]${USER}\[${__C_RESET}\] "
+        return
+    fi
+    # If Inside a container user
+    if ! grep 'kthreadd' /proc/2/status &>/dev/null; then
+        echo "\[${__C_CYAN}\]${USER}\[${__C_RESET}\] "
+        return
+    fi
+    echo ""
+}
+
+
+#### The prompt command
+
+__prompt_cmd () {
+    # Grab the return code! This needs to be first
+    __RET="$?"
+
+    # If the exit status was 127, the command was not found. Let's remove it from history
+    local number=$(history 1)
+    number=${number%% *}
+    if [ -n "$number" ]; then
+        if [ $exit_status -eq 127 ] && ([ -z $HISTLASTENTRY ] || [ $HISTLASTENTRY -lt $number ]); then
+            history -d $number
+        else
+            HISTLASTENTRY=$number
+        fi
+    fi
+
+    __GIT="$(__getgit)"
+    __VENV="$(__getvenv)"
+}
+
+PROMPT_COMMAND="__prompt_cmd"
+
+
+#### Prompt non changing data
+__BULLETS="●●●⮊"
+
+#### The actual prompt
+
+export PS1="\n${__SPACING}\[${__C_MAGENTA}\]\A\[${__C_RESET}\] \[${__C_YELLOW}\]${__BULLETS:0:3}\[${__C_RESET}\] \[${__C_GREEN}\]\w\[${__C_RESET}\]\[${__C_BOLD}\]$(__getremote)\[${__C_RESET}\]\[${__C_BLUE}\]$(__gethost)\[${__C_RESET}\] $(echo -n '$__GIT')$(echo -n '$__VENV')\n${__SPACING}      $(__getuser)\[${__C_YELLOW}\]${__BULLETS:3:1}\[${__C_RESET}\] "
+

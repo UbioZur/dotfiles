@@ -1,0 +1,73 @@
+## ~  UbioZur - https://github.com/UbioZur  ~ ##
+
+
+#### Configure Bash History
+
+# Move Bash History file away from home
+\mkdir -p "${XDG_STATE_HOME}/bash"
+export HISTFILE=${XDG_STATE_HOME}/bash/bash_history
+if [ -f ${HOME}/.bash_history ]; then
+    \mv -f ${HOME}/.bash_history ${HISTFILE}
+fi
+
+
+# Save 5,000 lines of history in memory
+export HISTSIZE=5000
+
+# Save 20000 lines of history to disk
+export HISTFILESIZE=20000
+
+# Add Timestamp to history
+export HISTTIMEFORMAT='%F %T '
+
+# Ignore redundant and space commands
+export HISTCONTROL=ignoreboth
+
+# Ignore more common cammands
+export HISTIGNORE=" *:bash:cd:cd ~:cd..:clear:clr:dcup:dcdwn:dcupt:dclog:df:echo \$?:exit:free:history:la:ld:lg:ll:ll /:ll /etc:ls:lt:m:micro:n:nano:ols:pwd:sl:zsh:..:...:...."
+
+# Append to history instead of overwrite
+shopt -s histappend
+
+# Multiple commands on one line show up as a single line
+shopt -s cmdhist
+
+
+#### Configure Bash
+
+# change to named directory
+shopt -s autocd
+
+# check the window size after each command and, if necessary, update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# Expand aliases
+shopt -s expand_aliases
+
+
+#### Configure auto completion
+
+# enable programmable completion features
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    \source /etc/bash_completion
+fi
+if [ -d /etc/bash_completion.d ] && ! shopt -oq posix; then
+    \source /etc/bash_completion.d/*
+fi
+
+# Ignore upper and lowercase when TAB completion
+bind "set completion-ignore-case on"
+
+
+#### Configure the prompt
+
+# Only show path with 3 depth
+export PROMPT_DIRTRIM=3
+
+
+#### Configure Key binds
+
+# CTRL+F to open zoxide index
+if [ -x /usr/bin/zoxide ]; then
+	\bind '"\C-f":"zi\n"'
+fi

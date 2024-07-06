@@ -1,0 +1,21 @@
+## ~  UbioZur - https://github.com/UbioZur  ~ ##
+
+
+#### Define Environement Variables
+
+# Set PATH Environement Variable
+[[ -d /usr/local/bin ]] && PATH="/usr/local/bin:$PATH"
+[[ -d ${HOME}/.bin ]] && PATH="$HOME/.bin:$PATH"
+[[ -d ${HOME}/.local/bin ]] && PATH="${HOME}/.local/bin:$PATH"
+[[ -d ${HOME}/Applications ]] && PATH="${HOME}/Applications:$PATH"
+[[ -d /var/lib/flatpak/exports/bin ]] && PATH="/var/lib/flatpak/exports/bin:$PATH"
+
+# Set the editor variable to preffered terminal editor
+[[ -x /usr/bin/nano ]] && export EDITOR="/usr/bin/nano"
+[[ -x /usr/bin/micro ]] && export EDITOR="/usr/bin/micro"
+
+# Fix GPG error Inappropriate ioctl for device (https://github.com/keybase/keybase-issues/issues/2798)
+export GPG_TTY=$(tty)
+
+# Grab the dotfile directory.
+export DOTFILES="${XDG_CONFIG_HOME}"

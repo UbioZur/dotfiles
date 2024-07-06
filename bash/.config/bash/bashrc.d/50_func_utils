@@ -1,0 +1,25 @@
+## ~  UbioZur - https://github.com/UbioZur  ~ ##
+
+
+#### Useful Functions
+
+# Make a directory and its parents and cd into the directory
+mkcd () {
+    \mkdir -p "$1"
+    \cd "$1"
+}
+
+# CD to a directory and list it's content
+cdls () {
+    \cd "$1" && ls
+}
+
+# CD to a directory and long list it's content
+cdll () {
+    \cd "$1" && ll
+}
+
+# CD to a directory and list it's content inc hiddent ones
+cdla () {
+    \cd "$1" && la
+}
