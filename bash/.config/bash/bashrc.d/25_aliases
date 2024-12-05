@@ -22,7 +22,7 @@ alias rm="\rm -I"       # Confirm before deleting more than 3 files
 alias cp="\cp -i"       # Confirm before overwriting
 alias mv="\mv -i"       # Confirm before overwriting
 
-#Edit and Text editor
+# Edit and Text editor
 alias e="${EDITOR}"
 [[ -x /usr/bin/micro ]] && alias m="/usr/bin/micro"         # faster way to use micro
 
@@ -98,18 +98,15 @@ if [ -x /usr/bin/git ]; then
 fi
 
 
-
-
 #### Docker Compose
 
-if [ -x /usr/bin/docker-compose ]; then
-    _dockercompose="/usr/bin/docker-compose"
+if [ -x /usr/bin/docker ]; then
+    _dockercompose="/usr/bin/docker compose"
 
     # Docker Compose
     alias dcup="$_dockercompose up -d --force-recreate && $_dockercompose logs -tf"
     alias dcdwn="$_dockercompose down"
     alias dcupt="$_dockercompose pull && $_dockercompose up -d --remove-orphans && $docker image prune && $_dockercompose logs -tf"
-    alias dclog="$_dockercompose logs -tf"
+    alias {dclog,dclogs}="$_dockercompose logs -tf"
     unset _dockercompose
 fi
-
