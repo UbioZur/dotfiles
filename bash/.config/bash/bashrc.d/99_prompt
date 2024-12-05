@@ -159,7 +159,12 @@ __getuser () {
 
 __getcompose() {
     # Get the running docker services
-    local services=$(docker compose ps --services --status=running 2>/dev/null)
+    if [ -x /usr/bin/docker-compose ]; then
+        _dockercompose="/usr/bin/docker-compose"
+    else
+        _dockercompose="/usr/bin/docker compose"
+    fi
+    local services=$($_dockercompose ps --services --status=running 2>/dev/null)
     # If command failed
     if [ -z "$services" ]; then
         if ! __is_compose; then

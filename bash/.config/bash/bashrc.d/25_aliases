@@ -101,7 +101,11 @@ fi
 #### Docker Compose
 
 if [ -x /usr/bin/docker ]; then
-    _dockercompose="/usr/bin/docker compose"
+    if [ -x /usr/bin/docker-compose ]; then
+        _dockercompose="/usr/bin/docker-compose"
+    else
+        _dockercompose="/usr/bin/docker compose"
+    fi
 
     # Docker Compose
     alias dcup="$_dockercompose up -d --force-recreate && $_dockercompose logs -tf"
