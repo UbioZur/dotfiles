@@ -50,10 +50,10 @@ If Available, It will replace certain command with alternative ones. You can use
 
 ### Docker Compose
 
-* `dcup` -> `docker-compose up -d --forcerecreate && dockercompose logs -tf`
-* `dcdwn` -> `docker-compose down`
-* `dcupt` -> `docker compose pull && docker-compose up -d --remove-orphans && docker-compose image prune && docker-compose logs -tf`
-* `dclog` -> `docker-compose logs -tf`
+* `dcup` -> `docker compose up -d --forcerecreate && docker compose logs -tf`
+* `dcdwn` -> `docker compose down`
+* `dcupt` -> `docker compose pull && docker compose up -d --remove-orphans && docker compose image prune && docker compose logs -tf`
+* `dclog` `dclogs` -> `docker compose logs -tf`
 
 
 ## FUNCTIONS
@@ -189,3 +189,15 @@ To activated the venv `activate`, to deactivate the venv `deactivate`
    HH:MM ●●● ~/.../path/3/depth      |venv:project ! activated: venv|
          ⮊
 ````
+
+### Inside a Docker Compose Stack
+
+If current directory is a docker compose stack folder.
+
+````
+   HH:MM ●●● ~/.../path/3/depth       service1       service2
+         ⮊
+````
+
+* `red  ` There is a docker-compose file but no service running
+* `green  ` Services are running

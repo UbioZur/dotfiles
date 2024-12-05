@@ -21,6 +21,8 @@ __C_GREY='\033[37m';          __C_GREY_BOLD='\033[37;1m'
 
 __SPACING="   "
 __GIT=""
+__COMPOSE=""
+__VENV=""
 
 
 #### Get Git information (branch|+MDR?SP)
@@ -153,6 +155,22 @@ __getuser () {
 }
 
 
+#### Get Docker Compose information
+
+__getcompose() {
+    # Get the running docker services
+    local services=$(docker compose ps --services --status=running)
+    # If command failed
+    if [ -z "$services" ]; then
+        if [ ! $(__is_compose) ]; then
+            # No files found
+            return
+        fi
+        echo -en "${__SPACING}${__C_RED_BOLD} ${__C_RESET}"
+    fi
+    echo -en "$(echo "$services" | paste -sd "${__SPACING}${__C_GREEN_BOLD}  ${__C_RESET}" -)"
+}
+
 #### The prompt command
 
 __prompt_cmd () {
@@ -170,7 +188,8 @@ __prompt_cmd () {
         fi
     fi
 
-    __GIT="$(__getgit)"
+    if [ -x /usr/bin/git ]; then __GIT="$(__getgit)"; fi
+    if [ -x /usr/bin/docker ]; then __COMPOSE="$(__getcompose)"; fi
     __VENV="$(__getvenv)"
 }
 
@@ -182,5 +201,5 @@ __BULLETS="●●●⮊"
 
 #### The actual prompt
 
-export PS1="\n${__SPACING}\[${__C_MAGENTA}\]\A\[${__C_RESET}\] \[${__C_YELLOW}\]${__BULLETS:0:3}\[${__C_RESET}\] \[${__C_GREEN}\]\w\[${__C_RESET}\]\[${__C_BOLD}\]$(__getremote)\[${__C_RESET}\]\[${__C_BLUE}\]$(__gethost)\[${__C_RESET}\] $(echo -n '$__GIT')$(echo -n '$__VENV')\n${__SPACING}      $(__getuser)\[${__C_YELLOW}\]${__BULLETS:3:1}\[${__C_RESET}\] "
+export PS1="\n${__SPACING}\[${__C_MAGENTA}\]\A\[${__C_RESET}\] \[${__C_YELLOW}\]${__BULLETS:0:3}\[${__C_RESET}\] \[${__C_GREEN}\]\w\[${__C_RESET}\]\[${__C_BOLD}\]$(__getremote)\[${__C_RESET}\]\[${__C_BLUE}\]$(__gethost)\[${__C_RESET}\] $(echo -n '$__GIT')$(echo -n '$__VENV')$(echo -n '$__COMPOSE')\n${__SPACING}      $(__getuser)\[${__C_YELLOW}\]${__BULLETS:3:1}\[${__C_RESET}\] "
 

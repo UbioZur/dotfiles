@@ -1,0 +1,17 @@
+## ~  UbioZur - https://github.com/UbioZur  ~ ##
+
+
+#### Docker Compose Functions
+
+# Function to check if the current directory or any parent directory contains a docker-compose.yml
+function __is_compose () {
+    local dir="$PWD"
+
+    while [ "$dir" != "/" ]; do
+        if [ -f "$dir/docker-compose.yml" ]; then
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    return 1
+}
