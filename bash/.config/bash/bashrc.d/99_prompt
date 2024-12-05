@@ -164,7 +164,7 @@ __getcompose() {
     else
         _dockercompose="/usr/bin/docker compose"
     fi
-    local services=$($_dockercompose ps --services --status=running 2>/dev/null)
+    local services=$($_dockercompose ps --services --filter "status=running" 2>/dev/null)
     # If command failed
     if [ -z "$services" ]; then
         if ! __is_compose; then
