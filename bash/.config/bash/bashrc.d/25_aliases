@@ -94,7 +94,7 @@ if [ -x /usr/bin/git ]; then
     alias {grmd,gitrmd}="/usr/bin/git rm -r --cached"       # Untrack a directory
     alias {gs,gitstatus}="/usr/bin/git status"              # Display git status
     alias {gu,gitaddu}="/usr/bin/git add -u"                # Add files already tracked
-    alias {gitpull}="/usr/bin/git pull"                     # Pull from origin
+    alias gitpull="/usr/bin/git pull"                       # Pull from origin
 fi
 
 
