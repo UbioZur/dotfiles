@@ -168,7 +168,7 @@ __getcompose() {
         fi
         echo -en "${__SPACING}${__C_RED_BOLD}${__C_RESET}"
     fi
-    echo -en "$(echo "$services" | paste -sd "${__SPACING}${__C_GREEN_BOLD} ${__C_RESET}" -)"
+    echo -en "${__SPACING}${__C_GREEN_BOLD} ${__C_RESET}${__BOLD}$(echo "$services" | paste -sd "|" -)${__C_RESET}"
 }
 
 #### The prompt command
