@@ -166,9 +166,9 @@ __getcompose() {
             # No files found
             return
         fi
-        echo -en "${__SPACING}${__C_RED_BOLD} ${__C_RESET}"
+        echo -en "${__SPACING}${__C_RED_BOLD}${__C_RESET}"
     fi
-    echo -en "$(echo "$services" | paste -sd "${__SPACING}${__C_GREEN_BOLD}  ${__C_RESET}" -)"
+    echo -en "$(echo "$services" | paste -sd "${__SPACING}${__C_GREEN_BOLD} ${__C_RESET}" -)"
 }
 
 #### The prompt command
