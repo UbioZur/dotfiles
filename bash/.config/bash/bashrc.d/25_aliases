@@ -110,7 +110,7 @@ if [ -x /usr/bin/docker ]; then
     # Docker Compose
     alias dcup="$_dockercompose up -d --force-recreate && $_dockercompose logs -tf"
     alias dcdwn="$_dockercompose down"
-    alias dcupt="$_dockercompose pull && $_dockercompose up -d --remove-orphans && $docker image prune && $_dockercompose logs -tf"
+    alias dcupt="$_dockercompose pull && $_dockercompose up -d --remove-orphans && /usr/bin/docker image prune && $_dockercompose logs -tf"
     alias {dclog,dclogs}="$_dockercompose logs -tf"
     unset _dockercompose
 fi
