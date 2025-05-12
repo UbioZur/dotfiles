@@ -36,8 +36,8 @@ To install the dotfiles, clone the repository and use the [makefile](./makefile)
 
 2. Run the make file to copy/install the dotfiles.
 
-   > [!CAUTION]
-   > Your original files/folders **will be deleted** without prompt or backup! Make sure to make your own backup first!
+> [!CAUTION]
+> Your original files/folders **will be deleted** without prompt or backup! Make sure to make your own backup first!
 
    * For a workstation (desktop linux), install every dotfiles.
 
