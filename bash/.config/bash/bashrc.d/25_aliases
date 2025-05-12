@@ -44,6 +44,18 @@ if [ -x /usr/bin/eza ]; then
     alias sl="${_lscmd}"               # Common Typo
     unset _lscmd
     unset _git
+else if [ -x /usr/bin/exa ]; then
+    _lscmd="/usr/bin/exa --color=auto --group-directories-first --icons"
+    [ -x /usr/bin/git ] && _git=" --git" || _git=""
+    alias ls="${_lscmd}"               # list listing without hidden files
+    alias ll="${_lscmd}${_git} -lh"    # list listing without hidden files
+    alias la="${_lscmd}${_git} -alh"   # list listing with hidden files
+    alias lt="${_lscmd}${_git} -aTh"   # tree listing
+    alias lg="${_lscmd}${_git} -algh"  # Display group ownership too
+    alias ld="${_lscmd}${_git} -aldh " # Display directories only
+    alias sl="${_lscmd}"               # Common Typo
+    unset _lscmd
+    unset _git
 else
     # Use old ls instead
     _lscmd="/usr/bin/ls --color=auto --group-directories-first"
