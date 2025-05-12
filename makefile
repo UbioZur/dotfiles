@@ -1,25 +1,17 @@
 ## ~  UbioZur - https://github.com/UbioZur  ~ ##
 
+#
+# Makefile to install / update my dotfiles.
+#
 
-#### Makefile to copy and "install" / "update" my dotfiles
-
-
-#### Directories to use for a headless target
-
+# List of directories to be used for an headless target (i.e. server)
 DIRS_HEADLESS := bash fastfetch fonts wget
 
-
-#### Files to Exclude in the install
-
+# List of files that are not neccessary to copy
 EXCLUDE_FILES := *.md
 
-
-#### Directories to excludes in the copy for all (non . diretories used for the repo)
-
+# Repository specific directories which are not dotfiles
 EXCLUDE_DIRS :=
-
-
-#### Used Variables
 
 # User home directory
 HOME_DIR := $(shell echo ~)/
@@ -37,64 +29,99 @@ COPY_DIRS := $(filter-out $(EXCLUDE_DIRS), $(DIRS_ALL))
 COPY_DIRS_HEADLESS := $(foreach dir,$(DIRS_HEADLESS),$(filter $(MAKEFILE_DIR)$(dir)%/,$(COPY_DIRS)))
 
 # Define the lock file used for the update target
-LOCK_FILE := $(MAKEFILE_DIR)directory.lock
+LOCK_FILE := $(MAKEFILE_DIR)directories.lock
 
-
-#### Usefull functions
+# name for the Cron file job
+CRON_NAME := dotfiles_update
 
 # Function to extract basename from path (handles trailing slash)
-
 get_basename = $(notdir $(patsubst %/,%,$(1)))
 
-#### Copy ALL dotfiles as a default target
+# Everything is PHONY
+.PHONY: all clean cron debug headless help update
 
-.PHONY: all
-all: $(COPY_DIRS)
+# Install every dotfiles
+all:
+	@echo -e "\e[1mTarget: all\e[0m"
+	@for dir in $(COPY_DIRS) ; do \
+		echo "Copying dotfiles from $$dir" ; \
+		rsync -avrq --exclude=$(EXCLUDE_FILES) $$dir/ $(HOME_DIR) ; \
+		touch $(LOCK_FILE) ; \
+		grep -qxF $$dir $(LOCK_FILE) || echo $$dir >> $(LOCK_FILE) ; \
+	done
 
-
-#### Dynamic targets building, each folder can have it's own target
-
-.PHONY: $(COPY_DIRS)
-$(COPY_DIRS): %:
-	@echo "Copying dotfiles from $* ..."
-	@rsync -avr --exclude=$(EXCLUDE_FILES) $*/ $(HOME_DIR)
-	@grep -qxF $* $(LOCK_FILE) || echo $* >> $(LOCK_FILE)
-
-
-#### Copy dotfiles only usefull for headless system
-
-.PHONY: headless
-headless: $(COPY_DIRS_HEADLESS)
-
-
-#### Clean up the lock file
-
-.PHONY: clean
+# Cleanup an install
 clean:
-	@echo "Cleaning up..."
+	@echo -e "\e[1mTarget: clean\e[0m"
+	@echo "Removing lock file"
 	@rm -f $(LOCK_FILE)
+	@echo "Removing crontab entry"
+	@crontab -l | grep -v "$(CRON_NAME)" | crontab -
 
+# Create a cron job
+cron:
+	@echo -e "\e[1mTarget: cron\e[0m"
+	@echo "Adding cron job to run daily at 12:00."
+	@(crontab -l | grep -v "$(CRON_NAME)" ; echo "0 12 * * * cd $(MAKEFILE_DIR) && git pull && make update # $(CRON_NAME) Update the dotfiles") | crontab -
 
-#### Update dotfiles based on the lockfile
-
-.PHONY: update
-update:
-	@echo "Updating dotfiles based on $(LOCK_FILE)..."
-	@while IFS= read -r line; do \
-		@rsync -avr --exclude=$(EXCLUDE_FILES) $*/ $(HOME_DIR); \
-	done < $(LOCK_FILE)
-
-
-#### To use for debugging
-
-.PHONY: debug
+#Print debug information
 debug:
-	@echo "MAKEFILE_DIR $(MAKEFILE_DIR)"
-	@echo "---"
-	@echo "DIRS_ALL $(DIRS_ALL)"
-	@echo "COPY_DIRS $(COPY_DIRS)"
-	@echo "---"
-	@echo "DIRS_HEADLESS $(DIRS_HEADLESS)"
-	@echo "COPY_DIRS_HEADLESS $(COPY_DIRS_HEADLESS)"
-	@echo "---"
-	@echo "$(foreach dir,$(COPY_DIRS_HEADLESS),$(call get_basename,$(dir)))"
+	@echo -e "\e[1mMakefile Directory | MAKEFILE_DIR :\e[0m"
+	@echo "$(MAKEFILE_DIR)"
+	@echo ""
+	@echo -e "\e[1mAll target Directories | COPY_DIRS :\e[0m"
+	@echo "$(call get_basename,$(COPY_DIRS))" | tr ' ' '\n'
+	@echo ""
+	@echo -e "\e[1mHeadless target Directories | COPY_DIRS_HEADLESS :\e[0m"
+	@echo "$(call get_basename,$(COPY_DIRS_HEADLESS))" | tr ' ' '\n'
+	@echo ""
+	@echo -e "\e[1mLock File | LOCK_FILE :\e[0m"
+ifeq ("$(wildcard $(LOCK_FILE))","")
+	@echo "Lock File $(LOCK_FILE) does not exist."
+else
+	@cat $(LOCK_FILE)
+endif
+	@echo ""
+	@echo -e "\e[1mCron Entry | CRON_NAME :\e[0m"
+	@echo "$(shell crontab -l | grep "$(CRON_NAME)")"
+
+# Install headless dotfiles
+headless:
+	@echo -e "\e[1mTarget: headless\e[0m"
+	@for dir in $(COPY_DIRS_HEADLESS) ; do \
+		echo "Copying dotfiles from $$dir" ; \
+		rsync -avrq --exclude=$(EXCLUDE_FILES) $$dir/ $(HOME_DIR) ; \
+		touch $(LOCK_FILE) ; \
+		grep -qxF $$dir $(LOCK_FILE) || echo $$dir >> $(LOCK_FILE) ; \
+	done
+
+# Print help usage information
+help:
+	@echo -e "\e[1mDotfiles Makefile\e[0m"
+	@echo ""
+	@echo "Usage: make [OPTIONS]"
+	@echo ""
+	@echo "Options to install dotfiles"
+	@echo "  all:       (DEFAULT) Install/Copy all the dotfiles."
+	@echo "  headless:  Install/copy dotfiles for headless systems"
+	@echo "  cron:      Add a cronjob dayly at 12:00 to update the git and dotfiles."
+	@echo ""
+	@echo "Standalone options to manage installed dotfiles"
+	@echo "  update:    Update the already installed dotfiles."
+	@echo "  clean:     Remove the cronjob and directories.lock file."
+	@echo ""
+	@echo "Extra Options to help development"
+	@echo "  debug:     Print some debug information."
+
+# Update installed dotfiles
+update:
+	@echo -e "\e[1mTarget: update\e[0m"
+ifeq ("$(wildcard $(LOCK_FILE))","")
+	# File does NOT exist
+	$(error File $(LOCK_FILE) does not exist with the list of previously installed dotfiles.)
+endif
+	$(info Updating the dotfiles based on the file $(LOCK_FILE))
+	@while IFS= read -r line; do \
+		echo "Updating $$line"; \
+		rsync -avrq --exclude=$(EXCLUDE_FILES) "$$line"/ $(HOME_DIR); \
+	done < $(LOCK_FILE)
