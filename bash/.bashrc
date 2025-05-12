@@ -28,6 +28,8 @@ if [ -x /usr/bin/zoxide ]; then
 	\eval "$(zoxide init bash)"
 fi
 
+#### Allow unicode for TTY fonts
+unicode_start
 
 #### Show Fastfetch on first startup
 
