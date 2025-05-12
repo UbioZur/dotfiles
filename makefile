@@ -5,13 +5,13 @@
 #
 
 # List of directories to be used for an headless target (i.e. server)
-DIRS_HEADLESS := bash fastfetch fonts wget
+DIRS_HEADLESS := bash fastfetch wget
 
 # List of files that are not neccessary to copy
 EXCLUDE_FILES := *.md
 
 # Repository specific directories which are not dotfiles
-EXCLUDE_DIRS :=
+EXCLUDE_DIRS := img/
 
 # User home directory
 HOME_DIR := $(shell echo ~)/
@@ -23,7 +23,8 @@ MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 DIRS_ALL := $(filter-out $(wildcard $(MAKEFILE_DIR).*), $(wildcard $(MAKEFILE_DIR)*/))
 
 # Directories to copy for all targets
-COPY_DIRS := $(filter-out $(EXCLUDE_DIRS), $(DIRS_ALL))
+COPY_DIRS := $(filter-out $(addprefix $(MAKEFILE_DIR),$(EXCLUDE_DIRS)), $(DIRS_ALL))
+
 
 # Directories to copy for headless target (excluding hidden/excluded directories)
 COPY_DIRS_HEADLESS := $(foreach dir,$(DIRS_HEADLESS),$(filter $(MAKEFILE_DIR)$(dir)%/,$(COPY_DIRS)))
