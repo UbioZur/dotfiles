@@ -44,7 +44,7 @@ if [ -x /usr/bin/eza ]; then
     alias sl="${_lscmd}"               # Common Typo
     unset _lscmd
     unset _git
-else if [ -x /usr/bin/exa ]; then
+elif [ -x /usr/bin/exa ]; then
     _lscmd="/usr/bin/exa --color=auto --group-directories-first --icons"
     [ -x /usr/bin/git ] && _git=" --git" || _git=""
     alias ls="${_lscmd}"               # list listing without hidden files
