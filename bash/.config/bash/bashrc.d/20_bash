@@ -51,9 +51,9 @@ shopt -s expand_aliases
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     \source /etc/bash_completion
 fi
-if [ -d /etc/bash_completion.d ] && ! shopt -oq posix; then
-    \source /etc/bash_completion.d/*
-fi
+#if [ -d /etc/bash_completion.d ] && ! shopt -oq posix; then
+#    \source /etc/bash_completion.d/*
+#fi
 
 # Ignore upper and lowercase when TAB completion
 bind "set completion-ignore-case on"
